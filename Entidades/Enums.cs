@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Entidades
 {
-    public class Class1
+    public enum TiposMensaje
     {
+        Success,
+        Error
     }
 }
