@@ -7,38 +7,33 @@ using System.Threading.Tasks;
 
 namespace Entidades
 {
-    
+
+    [Serializable]
     public class Evaluacion
     {
         [Key]
-        public int EvaluacionId { get; set; }
-        public String Nombre { get; set; }
-        public String Categoria { get; set; }
+        public int EvaluacionID { get; set; }
         public DateTime Fecha { get; set; }
-        public decimal Valor { get; set; }
-        public decimal Logrado { get; set; }
-        public decimal Perdido { get; set; }
+        public string Estudiante { get; set; }
+        public decimal TotalPerdido { get; set; }
+        public virtual List<DetalleEvaluacion> DetalleEvaluacion { get; set; }
 
-        public Evaluacion(int evaluacionId, string nombre, string categoria, DateTime fecha, decimal valor, decimal logrado, decimal perdido)
+        public Evaluacion(int evaluacionID, DateTime fecha, string estudiante, decimal totalPerdido)
         {
-            EvaluacionId = evaluacionId;
-            Nombre = nombre;
-            Categoria = categoria;
+            EvaluacionID = evaluacionID;
             Fecha = fecha;
-            Valor = valor;
-            Logrado = logrado;
-            Perdido = perdido;
+            Estudiante = estudiante ?? throw new ArgumentNullException(nameof(estudiante));
+            TotalPerdido = totalPerdido;
+            DetalleEvaluacion = new List<DetalleEvaluacion>();
         }
 
         public Evaluacion()
         {
-            EvaluacionId = 0;
-            Nombre = String.Empty;
-            Categoria = String.Empty;
+            EvaluacionID = 0;
             Fecha = DateTime.Now;
-            Valor = 0;
-            Logrado = 0;
-            Perdido = 0;
+            Estudiante = string.Empty;
+            TotalPerdido = 0;
+            DetalleEvaluacion = new List<DetalleEvaluacion>();
         }
     }
 }

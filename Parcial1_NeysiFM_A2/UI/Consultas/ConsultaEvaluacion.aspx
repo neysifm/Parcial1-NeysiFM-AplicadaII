@@ -5,7 +5,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="container container-fluid">
         <div class="form-group">
-            <label for="IdTextBox">Email address</label>
+            <label for="IdTextBox">Consultando EJEMPLO</label>
             <asp:TextBox ID="IdTextBox" runat="server"></asp:TextBox>
            </div>
     </div>

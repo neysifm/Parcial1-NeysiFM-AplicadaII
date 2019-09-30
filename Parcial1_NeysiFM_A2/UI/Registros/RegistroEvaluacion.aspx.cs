@@ -13,136 +13,169 @@ namespace Parcial1_NeysiFM_A2.UI.Registros
 {
     public partial class RegistroEvaluacion : System.Web.UI.Page
     {
+        readonly string KeyViewState = "Evaluacion";
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!Page.IsPostBack)
+            if (!IsPostBack)
             {
-                int id = Utils.ToInt(Request.QueryString["id"]);
-                if (id > 0)
-                {
-                    RepositorioBase<Evaluacion> repositorio = new RepositorioBase<Evaluacion>();
-                    var evaluacion = repositorio.Buscar(id);
-
-                    if (evaluacion == null)
-                    {
-                        MostrarMensaje(TiposMensaje.Error, "Registro no encontrado");
-                    }
-                    else
-                    {
-                        LlenaCampos(evaluacion);
-                    }
-                }
+                ViewState[KeyViewState] = new Evaluacion();
             }
         }
-
-        protected void BuscarButton_Click(object sender, EventArgs e)
+        private void Limpiar()
         {
-            Expression<Func<Evaluacion, bool>> filtro = x => true;
-            int id = Utils.ToInt(Request.QueryString["id"]);
-            if (id > 0)
-            {
-                RepositorioBase<Evaluacion> repositorio = new RepositorioBase<Evaluacion>();
-                var evaluacion = repositorio.Buscar(id);
+            EvaluacionID.Text = 0.ToString();
+            FechaTextBox.Text = DateTime.Now.ToString();
+            EstudianteTextBox.Text = string.Empty;
+            CategoriaTextBox.Text = string.Empty;
+            ValorTextBox.Text = 0.ToString();
+            LogradoTextBox.Text = 0.ToString();
+            TotalPerdidoTextBox.Text = 0.ToString();
+            MostrarMensajes.Visible = false;
+            MostrarMensajes.Text = string.Empty;
+            ViewState[KeyViewState] = new Evaluacion();
+            ActualizarGrid();
+        }
 
-                if (evaluacion == null)
-                {
-                    MostrarMensaje(TiposMensaje.Error, "Registro no encontrado");
-                }
-                else
-                {
-                    LlenaCampos(evaluacion);
-                }
-            }
+        private bool Validar()
+        {
+            bool paso = true;
+            if (string.IsNullOrEmpty(EstudianteTextBox.Text))
+                paso = false;
+            if (string.IsNullOrEmpty(FechaTextBox.Text))
+                paso = false;
+            if (DetalleGridView.Rows.Count <= 0)
+                paso = false;
+            return paso;
+        }
+
+        private Evaluacion LlenaClase()
+        {
+            Evaluacion evaluaciones = new Evaluacion();
+            DateTime.TryParse(FechaTextBox.Text, out DateTime result);
+            evaluaciones = (Evaluacion)ViewState[KeyViewState];
+            evaluaciones.EvaluacionID = EvaluacionID.Text.ToInt();
+            evaluaciones.Fecha = result;
+            evaluaciones.Estudiante = EstudianteTextBox.Text;
+            evaluaciones.TotalPerdido = TotalPerdidoTextBox.Text.ToDecimal();
+            return evaluaciones;
+        }
+
+        private void LlenaCampo(Evaluacion evaluaciones)
+        {
+            EvaluacionID.Text = evaluaciones.EvaluacionID.ToString();
+            FechaTextBox.Text = evaluaciones.Fecha.ToString();
+            EstudianteTextBox.Text = evaluaciones.Estudiante.ToString();
+            TotalPerdidoTextBox.Text = evaluaciones.TotalPerdido.ToString();
+            ViewState[KeyViewState] = evaluaciones;
+            ActualizarGrid();
+        }
+
+        public bool ExisteEnLaBaseDeDatos()
+        {
+            RepositorioEvaluacion repositorio = new RepositorioEvaluacion();
+            return repositorio.Buscar(EvaluacionID.Text.ToInt()) != null; ;
         }
 
         protected void NuevoButton_Click(object sender, EventArgs e)
         {
             Limpiar();
-            ErrorLabel.Text = string.Empty;
         }
-
         protected void GuadarButton_Click(object sender, EventArgs e)
         {
-            RepositorioBase<Evaluacion> repositorio = new BLL.RepositorioBase<Evaluacion>();
-            Evaluacion evaluacion = new Evaluacion();
-            evaluacion = LlenaClase();
+            if (!Validar())
+                return;
             bool paso = false;
-
-            if (evaluacion.EvaluacionId <= 0)
-            {
-                evaluacion.Fecha = DateTime.Now;
+            Evaluacion evaluacion = LlenaClase();
+            RepositorioEvaluacion repositorio = new RepositorioEvaluacion();
+            if (evaluacion.EvaluacionID == 0)
                 paso = repositorio.Guardar(evaluacion);
-                if (paso)
-                {
-                    Limpiar();
-                }
-            }
             else
+            {
+                if (!ExisteEnLaBaseDeDatos())
+                {
+                    return;
+                }
                 paso = repositorio.Modificar(evaluacion);
-
+            }
             if (paso)
             {
-                MostrarMensaje(TiposMensaje.Success, "Registro Guardado Correctamente!");
                 Limpiar();
+                MostrarMensajes.Text = "Guardado";
+                MostrarMensajes.CssClass = "alert-success";
+                MostrarMensajes.Visible = true;
             }
             else
-                MostrarMensaje(TiposMensaje.Error, "No Fue Posible Guardar El Registro");
+            {
+                MostrarMensajes.Text = "No guardo";
+                MostrarMensajes.CssClass = "alert-warning";
+                MostrarMensajes.Visible = true;
+            }
+        }
+
+        protected void BuscarButton_Click(object sender, EventArgs e)
+        {
+            RepositorioEvaluacion repositorio = new RepositorioEvaluacion();
+            Evaluacion evaluaciones = repositorio.Buscar(EvaluacionID.Text.ToInt());
+            if (evaluaciones != null)
+            {
+                Limpiar();
+                LlenaCampo(evaluaciones);
+            }
         }
 
         protected void EliminarButton_Click(object sender, EventArgs e)
         {
-            int id = 0;
-
-            if (string.IsNullOrEmpty(this.IdTextBox.Text) || string.IsNullOrWhiteSpace(IdTextBox.Text))
+            RepositorioEvaluacion repositorio = new RepositorioEvaluacion();
+            int id = EvaluacionID.Text.ToInt();
+            if (!ExisteEnLaBaseDeDatos())
             {
-                MostrarMensaje(TiposMensaje.Error, "El Registro no Puede Ser Eliminado!!");
+                MostrarMensajes.Visible = true;
+                MostrarMensajes.Text = "No encontrado";
+                MostrarMensajes.CssClass = "alert-danger";
                 return;
             }
-            id = Utils.ToInt(IdTextBox.Text);
-            RepositorioBase<Evaluacion> repositorio = new RepositorioBase<Evaluacion>();
-
-            if (repositorio.Buscar(id) == null)
-            {
-                MostrarMensaje(TiposMensaje.Error, "Registro no encontrado");
-                return;
-            }
-            bool eliminado = repositorio.Eliminar(id);
-            if (eliminado)
-            {
-                MostrarMensaje(TiposMensaje.Success, "Registro Eliminado!!");
-                Limpiar();
-                return;
-            }
-        }
-
-        private Evaluacion LlenaClase()
-        {
-            Evaluacion evaluacion = new Evaluacion();
-            evaluacion.EvaluacionId = Utils.ToInt(IdTextBox.Text.ToString());
-            evaluacion.Nombre = NombreTextBox.Text;
-
-            return evaluacion;
-        }
-        private void LlenaCampos(Evaluacion evaluacion)
-        {
-            IdTextBox.Text = evaluacion.EvaluacionId.ToString();
-            NombreTextBox.Text = evaluacion.Nombre;
-    
-        }
-        private void Limpiar()
-        {
-            IdTextBox.Text = " ";
-            NombreTextBox.Text = " ";   
-        }
-
-        void MostrarMensaje(TiposMensaje tipo, string mensaje)
-        {
-            ErrorLabel.Text = mensaje;
-
-            if (tipo == TiposMensaje.Success)
-                ErrorLabel.CssClass = "alert-success";
             else
-                ErrorLabel.CssClass = "alert-danger";
-        }        
+            {
+                if (repositorio.Eliminar(id))
+                {
+                    Limpiar();
+                    MostrarMensajes.Visible = true;
+                    MostrarMensajes.Text = "Eliminado";
+                    MostrarMensajes.CssClass = "alert-danger";
+                }
+            }
+        }
+
+        protected void AgregarButton_Click(object sender, EventArgs e)
+        {
+            Evaluacion evaluacion = ((Evaluacion)ViewState[KeyViewState]);
+            decimal Valor = ValorTextBox.Text.ToDecimal();
+            decimal Logrado = LogradoTextBox.Text.ToDecimal();
+            evaluacion.DetalleEvaluacion.Add(new DetalleEvaluacion(0, evaluacion.EvaluacionID, CategoriaTextBox.Text, Valor, Logrado, (Valor - Logrado)));
+            ViewState[KeyViewState] = evaluacion;
+            ActualizarGrid();
+            Calcular();
+            CategoriaTextBox.Text = string.Empty;
+            ValorTextBox.Text = 0.ToString();
+            LogradoTextBox.Text = 0.ToString();
+        }
+
+        private void Calcular()
+        {
+            decimal TotalPerdido = 0;
+            Evaluacion evaluacion = ((Evaluacion)ViewState[KeyViewState]);
+            foreach (var item in evaluacion.DetalleEvaluacion.ToList())
+            {
+                TotalPerdido += item.Perdido;
+            }
+            TotalPerdidoTextBox.Text = TotalPerdido.ToString();
+        }
+
+        private void ActualizarGrid()
+        {
+            Evaluacion evaluacion = (Evaluacion)ViewState[KeyViewState];
+            DetalleGridView.DataSource = evaluacion.DetalleEvaluacion;
+            DetalleGridView.DataBind();
+        }
     }
 }

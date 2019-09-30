@@ -8,96 +8,87 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
-    <%--ID--%>
-    <div class="container container-fluid">
-    <div class="card">
-		<div class="card-title"> <h2>Registro de Evaluaciones</h2></div>
-		<div class="card-body">
-			<div class="form-group col-md-3">
-			<div class="input-group">
-			<div class="input-group-prepend">
-				<span class="input-group-text">ID</span>
-			</div>
-			<asp:textbox type="text" runat="server" class="form-control" ID="Textbox5"></asp:textbox>
-			<div class="input-group-append">
-				<asp:linkbutton ID="Linkbutton5" class="btn btn-primary" runat="server" OnClick="ButtonBuscar_Click"><i class="fa fa-search"></i></asp:linkbutton>							
-			</div>
-			</div>
-			</div>
+    <div class="container-fluid">
+        <div class="card text-center bg-light">
+            <div class="card-header"><%:Page.Title %></div>
+
+            <%--ID--%>
+            <div>
+                <label for="EvaluacionID" runat="server">ID</label>
+                <asp:TextBox ID="EvaluacionID" runat="server" TextMode="Number" placeHolder="ID"></asp:TextBox>
+                <asp:Button ID="BuscarButton" class="btn btn-info btn-lg" Text="Buscar" OnClick="BuscarButton_Click" runat="server" />
+            </div>
+
+            <%--FECHA--%>
+            <div>
+                <label for="FechaTextBox" runat="server">Fecha</label>
+                <asp:TextBox ID="FechaTextBox" runat="server" TextMode="Date"></asp:TextBox>
+            </div>
+
+            <%--ESTUDIANTE--%>
+            <div>
+                <label for="EstudianteTextBox" runat="server">Estudiante</label>
+                <asp:TextBox ID="EstudianteTextBox" runat="server" placeHolder="Nombre"></asp:TextBox>
+            </div>
+
+            <%--CATEGORIA--%>
+            <div>
+                <label for="CategoriaTextBox" runat="server">Categoria</label>
+                <asp:TextBox ID="CategoriaTextBox" runat="server" placeHolder="Categoria"></asp:TextBox>
+            </div>
+
+            <%--VALOR--%>
+            <div>
+                <label for="ValorTextBox" runat="server">Valor</label>
+                <asp:TextBox ID="ValorTextBox" runat="server" placeHolder="Valor"></asp:TextBox>
+            </div>
+
+            <%--LOGRADO--%>
+            <div>
+                <label for="LogradoTextBox" runat="server">Logrado</label>
+                <asp:TextBox ID="LogradoTextBox" runat="server" placeHolder="Logrado"></asp:TextBox>
+            </div>
+
+            <%--BOTON AGREGAR--%>
+            <div>
+                <asp:Button ID="AgregarButton" Text="Agregar" runat="server" OnClick="AgregarButton_Click" />
+            </div>
+
+            <%--GRID--%>
+            <div>
+                <div class="row">
+                    <div class="table table-responsive col-md-12">
+                        <asp:GridView ID="DetalleGridView" runat="server"
+                            CssClass="table table-condensed table-bordered table-responsive"
+                            GridLines="None" CellPadding="4" ForeColor="#333333" 
+                            AllowPaging="true" PageSize="5">
+                        </asp:GridView>
+                    </div>
+                </div>
+            </div>
+
+            <%--TOTAL PERDIDO--%>
+            <div>
+                <label for="TotalPerdidoTextBox" runat="server">Total Perdido</label>
+                <asp:TextBox ID="TotalPerdidoTextBox" AutoPostBack="true" runat="server" ReadOnly="true" placeHolder="Total Perdido"></asp:TextBox>
+            </div>
+
+            <%--BOTONES--%>
+            <div class="panel-footer">
+                <div class="text-center">
+                    <div class="form-group" display: inline-block>
+                        <asp:Button Text="Nuevo" class="btn btn-warning btn-lg" runat="server" ID="NuevoButton" OnClick="NuevoButton_Click" />
+                        <asp:Button Text="Guardar" class="btn btn-success btn-lg" runat="server" ID="GuadarButton" OnClick="GuadarButton_Click" />
+                        <asp:Button Text="Eliminar" class="btn btn-danger btn-lg" runat="server" ID="EliminarButton" OnClick="EliminarButton_Click" />
+                    </div>
+                </div>
+            </div>
+
+            <%--MENSAJES--%>
+            <asp:Label ID="MostrarMensajes" runat="server" Text="Label" Visible="false"></asp:Label>
+
         </div>
-     </div>
     </div>
-
-    <%--ESTUDIANTE--%>
-    <div class="form-group">
-		<div class="input-group">
-			<div class="input-group-prepend">
-				<span class="input-group-text">Nombre Estudiante</span>
-			</div>
-			<asp:textbox type="text" runat="server" class="form-control" ID="NombreTextBox"></asp:textbox>
-			<asp:requiredfieldvalidator runat="server" ControlToValidate="NombreTextBox" errormessage="RequiredFieldValidator"></asp:requiredfieldvalidator>
-		</div>
-	</div>
-
-    <%--CATEGORIA--%>
-    <div class="row">
-	<div class="form-group col-md-3">
-		<asp:Label runat="server">Categoria</asp:Label>
-		<asp:TextBox runat="server" class="form-control" ID="TextBox2"></asp:TextBox>
-		<asp:requiredfieldvalidator runat="server" ControlToValidate="NombreCategoriaTextBox" errormessage="RequiredFieldValidator"></asp:requiredfieldvalidator>
-	</div>
-    </div>
-
-    <%--VALOR--%>
-    <div class="form-group col-md-3">
-		<asp:Label runat="server">Valor</asp:Label>
-		<asp:TextBox runat="server" class="form-control" ID="TextBox4"></asp:TextBox>
-		<asp:requiredfieldvalidator runat="server" ControlToValidate="ValorTextBox" errormessage="RequiredFieldValidator"></asp:requiredfieldvalidator>
-	</div>
-
-    <%--LOGRADO--%>
-    <div class="form-group col-md-3">
-	<asp:Label runat="server">Logrado</asp:Label>
-	<asp:TextBox runat="server" class="form-control" ID="TextBox3"></asp:TextBox>
-	<asp:requiredfieldvalidator runat="server" ControlToValidate="LogradoTextBox" errormessage="RequiredFieldValidator"></asp:requiredfieldvalidator>
-    </div>
-
-    <%--AGREGAR--%>
-    <div class="form-group col-md-3">
-	<asp:LinkButton runat="server" ID="LinkButton4" OnClick="Agregar_Click" CssClass="btn btn-info">Agregar</asp:LinkButton>
-    </div>
-
-    <%--GRID--%>
-	<div class="col-md-12">
-		<asp:GridView ID="DatosGridView"
-			runat="server"
-			class="table table-condensed table-bordered table-responsive"
-			CellPadding="4" ForeColor="#333333" GridLines="None">
-
-			<AlternatingRowStyle BackColor="White" />
-			<Columns>
-				<asp:HyperLinkField ControlStyle-ForeColor="blue"
-					DataNavigateUrlFields="EvaluacionId"
-					DataNavigateUrlFormatString="~/UI/Registros/RegistroEvaluacion.aspx?Id={0}"
-					Text="Editar"></asp:HyperLinkField>
-			</Columns>
-			<HeaderStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
-			<RowStyle BackColor="#EFF3FB" />
-		</asp:GridView>
-    </div>
-
-    <%--ERROR--%>
-    <div>
-        <asp:Label ID="ErrorLabel" runat="server" Text=" "></asp:Label>
-    </div>
-
-    <%--BOTONES--%>
-    <div class="card-footer">
-	<asp:linkbutton ID="Linkbutton1"  class="btn btn-primary" runat="server" OnClick="NuevoButton_Click">Nuevo</asp:linkbutton>
-	<asp:linkbutton ID="Linkbutton2"  class="btn btn-success" runat="server" OnClick="GuadarButton_Click">Guardar</asp:linkbutton>
-	<asp:linkbutton ID="Linkbutton3"  class="btn btn-danger" runat="server" OnClick="EliminarButton_Click">Eliminar</asp:linkbutton>
-    </div>
-
 </asp:Content>
 
 

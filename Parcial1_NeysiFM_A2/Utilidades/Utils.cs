@@ -8,19 +8,16 @@ namespace Parcial1_NeysiFM_A2.Utilidades
 {
     public static class Utils
     {
-        public static int ToInt(string valor)
+       
+        public static int ToInt(this string entero)
         {
-            int retorno = 0;
-            int.TryParse(valor, out retorno);
-
-            return retorno;
+            int.TryParse(entero, out int valor);
+            return valor;
         }
-
-        public static decimal ToDecimal(string valor)
+        public static decimal ToDecimal(this string decimales)
         {
-            decimal.TryParse(valor, out decimal retorno);
-
-            return retorno;
+            Decimal.TryParse(decimales, out decimal valor);
+            return valor;
         }
         public static void ShowToastr(this Page page, string message, string title, string type = "info")
         {
